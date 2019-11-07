@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-public class MainThread {
+public class MainThread extends Thread{
 	
 	//Finals
 	static final String error_title = "Error de conexión de servidor";
@@ -30,11 +30,14 @@ public class MainThread {
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(null, MainThread.errorPort_message + this.port + "\n" + e.getLocalizedMessage(), /*Title*/ MainThread.error_title, JOptionPane.ERROR_MESSAGE);
 		}
+		
 	}
 	
 	
 	//Methods
-	void run() {
+	public void run() {
+		
+		serverFrame.setMainThread(this);
 		
 		while(true) {
 			addNewConnection();
@@ -67,4 +70,36 @@ public class MainThread {
 	public void setServerFrame(ServerFrame serverFrame) {
 		this.serverFrame = serverFrame;
 	}
+
+
+	public ArrayList<SocketThread> getSocketThreads() {
+		return socketThreads;
+	}
+
+
+	public void setSocketThreads(ArrayList<SocketThread> socketThreads) {
+		this.socketThreads = socketThreads;
+	}
+
+
+	public ServerSocket getServerSocket() {
+		return serverSocket;
+	}
+
+
+	public void setServerSocket(ServerSocket serverSocket) {
+		this.serverSocket = serverSocket;
+	}
+
+
+	public Socket getSocket() {
+		return socket;
+	}
+
+
+	public void setSocket(Socket socket) {
+		this.socket = socket;
+	}
+	
+	
 }

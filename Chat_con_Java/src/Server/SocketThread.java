@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
 public class SocketThread extends Thread{
@@ -21,24 +22,31 @@ public class SocketThread extends Thread{
 	
 	//Constructors
 	public SocketThread(Socket socket, ArrayList<SocketThread> socketThreads, ServerFrame serverFrame){
-		
+		this.serverFrame = serverFrame;
 		this.socket = socket;
 		this.setSocketThreads(socketThreads);
 		
 		setBridge();
 		
 		setName();
-	
+		addUser();
+		
 	}
 	
 	
 	//Methods
 	public void run() {
 		
-		return;
+		String message = null;
+		
+		while(true) {
+			message = readMessage();
+			resendMessage(message);
+		}
+		
 	}
 	
-	void setBridge() {
+	private void setBridge() {
 		
 		try {
 			this.setOutput(new DataOutputStream(socket.getOutputStream()));
@@ -55,12 +63,50 @@ public class SocketThread extends Thread{
 		return;
 	}
 	
-	void setName(){
+	private void setName(){
 		
 		try {
 			this.setUserName(this.getInput().readUTF());
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		
+		return;
+	}
+	
+	private void addUser() {
+
+		DefaultListModel<Object> model = serverFrame.getListModel();
+		model.addElement(this.userName);
+		serverFrame.repaint();
+		
+		return;
+	}
+	
+	private String readMessage() {
+		
+		String message = null;
+		
+		try {
+			message = this.getInput().readUTF();
+			serverFrame.getEditorPaneChat().setText(serverFrame.getEditorPaneChat().getText() + message + " \n");
+			serverFrame.getScrollPaneChat().getVerticalScrollBar().setValue(serverFrame.getScrollPaneChat().getVerticalScrollBar().getMaximum());
+			serverFrame.repaint();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return message;
+	}
+	
+	private void resendMessage(String message){
+		
+		for(SocketThread s: socketThreads) {
+			try {
+				s.getOutput().writeUTF(message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		return;
