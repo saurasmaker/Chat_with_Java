@@ -78,6 +78,8 @@ public class SocketThread extends Thread{
 
 		DefaultListModel<Object> model = serverFrame.getListModel();
 		model.addElement(this.userName);
+		resendMessage("\n >>SERVIDOR: " + userName + " se ha unido al chat. \n");
+		serverFrame.getEditorPaneChat().setText(serverFrame.getEditorPaneChat().getText() + "\n >>SERVIDOR: " + userName + " se ha unido al chat. \n");
 		serverFrame.repaint();
 		
 		return;
@@ -93,6 +95,14 @@ public class SocketThread extends Thread{
 			serverFrame.getScrollPaneChat().getVerticalScrollBar().setValue(serverFrame.getScrollPaneChat().getVerticalScrollBar().getMaximum());
 			serverFrame.repaint();
 		} catch (IOException e) {
+			try {
+				resendMessage("\n >>SERVIDOR: " + userName + " ha abandonado el chat. \n\n");
+				serverFrame.getEditorPaneChat().setText(serverFrame.getEditorPaneChat().getText() + "\n >>SERVIDOR: " + userName + " ha abandonado el chat. \n");
+				socket.close();
+				//socketThreads.get(this);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 		
