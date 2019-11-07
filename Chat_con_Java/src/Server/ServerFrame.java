@@ -54,9 +54,9 @@ public class ServerFrame extends JFrame {
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(panelTop, GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+					.addComponent(panelTop, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(panelLeft, GroupLayout.PREFERRED_SIZE, 389, GroupLayout.PREFERRED_SIZE)
+					.addComponent(panelLeft, GroupLayout.DEFAULT_SIZE, 389, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(panelBottom, GroupLayout.PREFERRED_SIZE, 30, GroupLayout.PREFERRED_SIZE))
 		);
