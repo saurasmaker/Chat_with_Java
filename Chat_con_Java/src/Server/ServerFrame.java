@@ -37,6 +37,7 @@ public class ServerFrame extends JFrame {
 	private JTextField textFieldMessage;
 	private JEditorPane editorPaneChat;
 	private JScrollPane scrollPaneChat;
+	private JList<Object> listUsers;
 	private DataOutputStream output;
 	private DefaultListModel<Object> listModel;
 	private MainThread mainThread;
@@ -134,6 +135,11 @@ public class ServerFrame extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		
 		JButton btnKickUser = new JButton("Expulsar");
+		btnKickUser.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				endConnectionWithSelectedUser();
+			}
+		});
 		GroupLayout gl_panelLeft = new GroupLayout(panelLeft);
 		gl_panelLeft.setHorizontalGroup(
 			gl_panelLeft.createParallelGroup(Alignment.LEADING)
@@ -153,7 +159,7 @@ public class ServerFrame extends JFrame {
 					.addGap(6))
 		);
 		
-		JList<Object> listUsers = new JList<Object>();
+		listUsers = new JList<Object>();
 		listUsers.setModel(new DefaultListModel<Object>());
 		this.listModel = (DefaultListModel<Object>) listUsers.getModel();
 		scrollPane.setViewportView(listUsers);
@@ -207,10 +213,9 @@ public class ServerFrame extends JFrame {
 	//Methods
 	void sendMessage() {
 		
-		String message;
+		String message = this.textFieldMessage.getText();
 		
-		if((message = this.textFieldMessage.getText())!= null) {
-		
+		if(message.compareTo("") != 0) {		
 			for(SocketThread s: mainThread.getSocketThreads()) {
 				try {
 					s.getOutput().writeUTF("\n >>SERVIDOR: " + message + "\n");
@@ -228,10 +233,39 @@ public class ServerFrame extends JFrame {
 	
 	void sendMessageTo() {
 		
+		
+		
+		return;
+	}
+	
+	void endConnectionWithSelectedUser() {
+		
+		for(int i = 0; i < mainThread.getSocketThreads().size(); ++i) {
+			
+			System.out.println(this.listUsers.getSelectedValue());
+			System.out.println(mainThread.getSocketThreads().get(i).getUserName() + "\n");
+			
+			if(i == this.listUsers.getSelectedIndex()) {
+				
+				for(SocketThread s: mainThread.getSocketThreads()) {
+					try {
+						s.getOutput().writeUTF("\n >>SERVIDOR: " + mainThread.getSocketThreads().get(i).getUserName() + " ha sido expulsado de la sala.\n");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			
+				this.getEditorPaneChat().setText(editorPaneChat.getText() + "\n >>SERVIDOR: " + mainThread.getSocketThreads().get(i).getUserName() + " ha sido expulsado de la sala.\n");
+				getListModel().removeElement(mainThread.getSocketThreads().get(i).getUserName());
+				mainThread.getSocketThreads().get(i).setExecute(false);
+				mainThread.getSocketThreads().remove(i);
+			}
+		}
 		return;
 	}
 
 
+	//Getters & Setters
 	public DataOutputStream getOutput() {
 		return output;
 	}

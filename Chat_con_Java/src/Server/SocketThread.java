@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 public class SocketThread extends Thread{
 
 	//Atributes
+	private Boolean execute = true;
 	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
@@ -39,7 +40,7 @@ public class SocketThread extends Thread{
 		
 		String message = null;
 		
-		while(true) {
+		while(isExecute()) {
 			message = readMessage();
 			resendMessage(message);
 		}
@@ -94,19 +95,21 @@ public class SocketThread extends Thread{
 			serverFrame.getEditorPaneChat().setText(serverFrame.getEditorPaneChat().getText() + message + " \n");
 			serverFrame.getScrollPaneChat().getVerticalScrollBar().setValue(serverFrame.getScrollPaneChat().getVerticalScrollBar().getMaximum());
 			serverFrame.repaint();
+			return message;
+			
 		} catch (IOException e) {
 			try {
-				resendMessage("\n >>SERVIDOR: " + userName + " ha abandonado el chat. \n\n");
-				serverFrame.getEditorPaneChat().setText(serverFrame.getEditorPaneChat().getText() + "\n >>SERVIDOR: " + userName + " ha abandonado el chat. \n");
+				serverFrame.getListModel().removeElement(userName);
+				socketThreads.remove(this);
+				setExecute(false);
 				socket.close();
-				//socketThreads.get(this);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 			e.printStackTrace();
+			
+			return null;
 		}
-		
-		return message;
 	}
 	
 	private void resendMessage(String message){
@@ -170,5 +173,15 @@ public class SocketThread extends Thread{
 
 	public void setServerFrame(ServerFrame serverFrame) {
 		this.serverFrame = serverFrame;
+	}
+
+
+	public Boolean isExecute() {
+		return execute;
+	}
+
+
+	public void setExecute(Boolean execute) {
+		this.execute = execute;
 	}
 }

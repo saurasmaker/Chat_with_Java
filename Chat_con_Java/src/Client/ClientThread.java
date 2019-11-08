@@ -22,6 +22,7 @@ public class ClientThread extends Thread{
 	final int port = 5000;
 	
 	//Atributes
+	private Boolean paused = false, suspended = false;
 	private Socket socket;
 	private DataInputStream input;
 	private DataOutputStream output;
@@ -43,6 +44,17 @@ public class ClientThread extends Thread{
 		String message = null;
 		
 		while(true){
+			try {
+				synchronized(this){
+					while(this.isPaused()) 
+						wait();
+					
+					if(this.isSuspended())
+						break;
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 			message = readMessage();
 			showMessage(message);
 		}
@@ -99,6 +111,9 @@ public class ClientThread extends Thread{
 			clientFrame.getEditorPaneChat().setText(clientFrame.getEditorPaneChat().getText() + message + "\n");
 			clientFrame.getScrollPaneChat().getVerticalScrollBar().setValue(clientFrame.getScrollPaneChat().getVerticalScrollBar().getMaximum());
 		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Se ha perdido la conexión con el servidor.\n" + e.getMessage(), /*Title*/ ClientThread.error_title, JOptionPane.ERROR_MESSAGE);
+			setSuspended(true);
+			this.clientFrame.dispose();
 			e.printStackTrace();
 		}
 		
@@ -153,6 +168,25 @@ public class ClientThread extends Thread{
 
 		public void setClientFrame(ClientFrame clientFrame) {
 			this.clientFrame = clientFrame;
+		}
+
+		public Boolean isSuspended() {
+			return suspended;
+		}
+
+
+		public void setSuspended(Boolean suspended) {
+			this.suspended = suspended;
+		}
+
+
+		public Boolean isPaused() {
+			return paused;
+		}
+
+
+		public void setPaused(Boolean paused) {
+			this.paused = paused;
 		}
 
 }

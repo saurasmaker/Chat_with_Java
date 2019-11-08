@@ -6,6 +6,7 @@ public class Main {
 		ClientThread clientThread = new ClientThread();
 		ClientFrame clientFrame = new ClientFrame();
 		clientThread.setClientFrame(clientFrame);
+		clientFrame.setTitle(clientFrame.getTitle() + ": " + clientThread.getUserName());
 		clientThread.start();
 		clientFrame.setVisible(true);
 	}
