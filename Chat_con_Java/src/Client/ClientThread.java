@@ -18,7 +18,7 @@ public class ClientThread extends Thread{
 	static final String errorPort_message = "Error al conectar el servidor con el puerto ";
 	static final String errorConnection_message = "Error al intentar conectar con el servidor.";
 	
-	private String host = "10.160.5.32";//"192.168.1.40";
+	private String host = "10.160.5.32";/*"192.168.1.40"*/;
 	final int port = 5000;
 	
 	//Atributes
