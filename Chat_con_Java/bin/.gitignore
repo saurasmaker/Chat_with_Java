@@ -1,4 +1,5 @@
-/Server/
 /Client/
-/FrameTests/
 /ExternClasses/
+/FrameTests/
+/Server/
+/module-info.class
